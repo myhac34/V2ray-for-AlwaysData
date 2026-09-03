@@ -1,5 +1,13 @@
 #!/bin/bash
 
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+BLUE='\033[0;34m'
+MAGENTA='\033[0;35m'
+NC='\033[0m'
+
 set -e
 
 # ============================================================
@@ -343,7 +351,14 @@ echo "============================================================"
 echo "Configure AlwaysData:"
 echo
 echo "1. Advanced -> Processes -> Services"
+echo "   Command: ./v2ray -config config.json"
+echo
 echo "2. Web -> Sites"
-echo "3. Use ~/apache.conf for Apache configuration"
+echo "   Type: Static files"
+echo "   Document root: ~/www"
+echo "   HTTPS: Enabled"
+echo
+echo "3. Apache configuration"
+echo "   Paste the contents of ~/apache.conf"
 echo "============================================================"
 echo
