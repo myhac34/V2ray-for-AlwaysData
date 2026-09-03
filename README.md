@@ -20,12 +20,11 @@ Automated installer for deploying V2Ray on AlwaysData with VMess and VLESS over 
 Connect to your AlwaysData account through SSH and run:
 
 ```bash
-wget -O install.sh https://raw.githubusercontent.com/USERNAME/v2ray-alwaysdata/main/install.sh
+wget -O install.sh https://raw.githubusercontent.com/myhac34/v2ray-alwaysdata/main/install.sh
 chmod +x install.sh
 ./install.sh
 ```
 
-Replace `USERNAME` with your GitHub username.
 
 The installer will automatically create the V2Ray configuration, WebSocket paths, VMess/VLESS links, QR codes and the node page.
 
