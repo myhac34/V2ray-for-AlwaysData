@@ -4,7 +4,7 @@ Automated installer for deploying V2Ray on AlwaysData with VMess and VLESS over 
 
 ## Features
 
-* V2Ray 4.45.0
+* Latest version of V2Ray
 * VMess + WebSocket
 * VLESS + WebSocket
 * TLS through AlwaysData Apache
@@ -14,6 +14,14 @@ Automated installer for deploying V2Ray on AlwaysData with VMess and VLESS over 
 * Automatic QR codes
 * Automatic HTML node page
 * AlwaysData-compatible IPv6 listener (`::`)
+
+## V2Ray Version
+
+The installer automatically downloads the latest stable V2Ray release from V2Fly.
+No manual version change is required.
+The installer is compatible with V2Ray 5.x and uses the modern:
+./v2ray run -c config.json
+command.
 
 ## Installation
 
