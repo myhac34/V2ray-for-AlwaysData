@@ -1,17 +1,14 @@
-```bash
+bash
 #!/bin/bash
-
-# ============================================================
-# V2Ray for AlwaysData - Improved Installer
-# Based on: hiifeng/V2ray-for-AlwaysData
-# V2Ray version: 4.45.0
-# ============================================================
 
 set -e
 
+# ============================================================
+# V2Ray for AlwaysData - Improved Installer
+# ============================================================
+
 VERSION="4.45.0"
 BASE_URL="https://github.com/v2fly/v2ray-core/releases/download/v${VERSION}"
-TMP_DIR="$(mktemp -d)"
 
 USER_NAME="${USER}"
 HOME_DIR="$HOME"
@@ -25,6 +22,8 @@ VLESS_PATH="/vless"
 
 HOST="${USER_NAME}.alwaysdata.net"
 
+TMP_DIR="$(mktemp -d)"
+
 echo
 echo "============================================================"
 echo "        V2Ray for AlwaysData"
@@ -35,7 +34,7 @@ echo
 # Check dependencies
 # ------------------------------------------------------------
 
-for cmd in wget unzip qrencode openssl; do
+for cmd in wget unzip qrencode; do
     if ! command -v "$cmd" >/dev/null 2>&1; then
         echo "ERROR: $cmd is not installed."
         exit 1
@@ -43,7 +42,7 @@ for cmd in wget unzip qrencode openssl; do
 done
 
 # ------------------------------------------------------------
-# Generate UUID
+# UUID
 # ------------------------------------------------------------
 
 if [ -f "$HOME_DIR/.v2ray_uuid" ]; then
@@ -53,12 +52,12 @@ else
     echo "$UUID" > "$HOME_DIR/.v2ray_uuid"
 fi
 
-echo "UUID: $UUID"
-echo "Host: $HOST"
+echo "Host : $HOST"
+echo "UUID : $UUID"
 echo
 
 # ------------------------------------------------------------
-# Create directories
+# Directories
 # ------------------------------------------------------------
 
 mkdir -p "$WEB_DIR"
@@ -67,20 +66,19 @@ mkdir -p "$WEB_DIR"
 # Download V2Ray
 # ------------------------------------------------------------
 
-echo "[1/7] Downloading V2Ray ${VERSION}..."
+echo "[1/8] Downloading V2Ray ${VERSION}..."
 
 wget -q --show-progress \
     -O "$TMP_DIR/v2ray.zip" \
     "${BASE_URL}/v2ray-linux-64.zip"
 
 # ------------------------------------------------------------
-# Extract V2Ray
+# Extract
 # ------------------------------------------------------------
 
-echo "[2/7] Installing V2Ray..."
+echo "[2/8] Installing V2Ray..."
 
-unzip -oq "$TMP_DIR/v2ray.zip" \
-    -d "$TMP_DIR/v2ray"
+unzip -oq "$TMP_DIR/v2ray.zip" -d "$TMP_DIR/v2ray"
 
 cp "$TMP_DIR/v2ray/v2ray" "$HOME_DIR/v2ray"
 cp "$TMP_DIR/v2ray/v2ctl" "$HOME_DIR/v2ctl"
@@ -90,10 +88,10 @@ cp "$TMP_DIR/v2ray/geosite.dat" "$HOME_DIR/geosite.dat"
 chmod +x "$HOME_DIR/v2ray" "$HOME_DIR/v2ctl"
 
 # ------------------------------------------------------------
-# Create config.json
+# Config
 # ------------------------------------------------------------
 
-echo "[3/7] Creating config.json..."
+echo "[3/8] Creating config.json..."
 
 cat > "$HOME_DIR/config.json" <<EOF
 {
@@ -147,27 +145,20 @@ cat > "$HOME_DIR/config.json" <<EOF
             "protocol": "freedom",
             "settings": {}
         }
-    ],
-    "dns": {
-        "server": [
-            "8.8.8.8",
-            "8.8.4.4",
-            "localhost"
-        ]
-    }
+    ]
 }
 EOF
 
 # ------------------------------------------------------------
-# Test configuration
+# Test config
 # ------------------------------------------------------------
 
-echo "[4/7] Testing V2Ray configuration..."
+echo "[4/8] Testing configuration..."
 
 "$HOME_DIR/v2ray" -test -config "$HOME_DIR/config.json"
 
 # ------------------------------------------------------------
-# Generate VMess link
+# VMess link
 # ------------------------------------------------------------
 
 VMESS_JSON=$(printf \
@@ -177,23 +168,42 @@ VMESS_JSON=$(printf \
 VMESS_LINK="vmess://$(printf '%s' "$VMESS_JSON" | base64 -w0)"
 
 # ------------------------------------------------------------
-# Generate VLESS link
+# VLESS link
 # ------------------------------------------------------------
 
 VLESS_LINK="vless://${UUID}@${HOST}:443?encryption=none&security=tls&type=ws&host=${HOST}&path=%2Fvless#AlwaysData-VLESS"
 
 # ------------------------------------------------------------
-# Generate QR codes
+# QR codes
 # ------------------------------------------------------------
 
-echo "[5/7] Creating QR codes..."
+echo "[5/8] Creating QR codes..."
 
-qrencode -o "$WEB_DIR/M${UUID}.png" "$VMESS_LINK"
-qrencode -o "$WEB_DIR/L${UUID}.png" "$VLESS_LINK"
+qrencode -o "$WEB_DIR/vmess.png" "$VMESS_LINK"
+qrencode -o "$WEB_DIR/vless.png" "$VLESS_LINK"
 
 # ------------------------------------------------------------
-# Create index page
+# Apache configuration
 # ------------------------------------------------------------
+
+echo "[6/8] Creating apache.conf..."
+
+cat > "$HOME_DIR/apache.conf" <<EOF
+ProxyRequests off
+ProxyPreserveHost On
+
+ProxyPass "${VMESS_PATH}" "ws://services-${USER_NAME}.alwaysdata.net:${VMESS_PORT}${VMESS_PATH}"
+ProxyPassReverse "${VMESS_PATH}" "ws://services-${USER_NAME}.alwaysdata.net:${VMESS_PORT}${VMESS_PATH}"
+
+ProxyPass "${VLESS_PATH}" "ws://services-${USER_NAME}.alwaysdata.net:${VLESS_PORT}${VLESS_PATH}"
+ProxyPassReverse "${VLESS_PATH}" "ws://services-${USER_NAME}.alwaysdata.net:${VLESS_PORT}${VLESS_PATH}"
+EOF
+
+# ------------------------------------------------------------
+# Web page
+# ------------------------------------------------------------
+
+echo "[7/8] Creating web pages..."
 
 cat > "$WEB_DIR/index.html" <<EOF
 <!DOCTYPE html>
@@ -204,17 +214,11 @@ cat > "$WEB_DIR/index.html" <<EOF
 <title>AlwaysData</title>
 </head>
 <body>
-<h2>AlwaysData</h2>
-<p>V2Ray service is installed.</p>
+<h2>V2Ray for AlwaysData</h2>
+<p>Service is installed.</p>
 </body>
 </html>
 EOF
-
-# ------------------------------------------------------------
-# Create node page
-# ------------------------------------------------------------
-
-echo "[6/7] Creating node page..."
 
 cat > "$WEB_DIR/${UUID}.html" <<EOF
 <!DOCTYPE html>
@@ -251,7 +255,6 @@ hr {
     margin: 40px 0;
 }
 </style>
-
 </head>
 
 <body>
@@ -260,7 +263,7 @@ hr {
 
 <h3>VMess</h3>
 
-<img src="M${UUID}.png">
+<img src="vmess.png">
 
 <textarea readonly>${VMESS_LINK}</textarea>
 
@@ -268,7 +271,7 @@ hr {
 
 <h3>VLESS</h3>
 
-<img src="L${UUID}.png">
+<img src="vless.png">
 
 <textarea readonly>${VLESS_LINK}</textarea>
 
@@ -277,58 +280,43 @@ hr {
 EOF
 
 # ------------------------------------------------------------
-# Apache configuration
-# ------------------------------------------------------------
-
-APACHE_CONFIG=$(cat <<EOF
-#UUID=${UUID}
-#VMESS_WSPATH=${VMESS_PATH}
-#VLESS_WSPATH=${VLESS_PATH}
-
-ProxyRequests off
-ProxyPreserveHost On
-
-ProxyPass "${VMESS_PATH}" "ws://services-${USER_NAME}.alwaysdata.net:${VMESS_PORT}${VMESS_PATH}"
-ProxyPassReverse "${VMESS_PATH}" "ws://services-${USER_NAME}.alwaysdata.net:${VMESS_PORT}${VMESS_PATH}"
-
-ProxyPass "${VLESS_PATH}" "ws://services-${USER_NAME}.alwaysdata.net:${VLESS_PORT}${VLESS_PATH}"
-ProxyPassReverse "${VLESS_PATH}" "ws://services-${USER_NAME}.alwaysdata.net:${VLESS_PORT}${VLESS_PATH}"
-EOF
-)
-
-# ------------------------------------------------------------
 # Cleanup
 # ------------------------------------------------------------
+
+echo "[8/8] Cleaning temporary files..."
 
 rm -rf "$TMP_DIR"
 
 # ------------------------------------------------------------
-# Finish
+# Final
 # ------------------------------------------------------------
 
 echo
 echo "============================================================"
-echo "                 INSTALLATION COMPLETE"
+echo "             INSTALLATION COMPLETE"
 echo "============================================================"
 echo
 
-echo "V2Ray version : ${VERSION}"
-echo "UUID          : ${UUID}"
-echo "Host          : ${HOST}"
+echo "V2Ray version:"
+echo "${VERSION}"
+echo
+
+echo "UUID:"
+echo "${UUID}"
 echo
 
 echo "------------------------------------------------------------"
-echo "SERVICE COMMAND"
+echo "SERVICE"
 echo "------------------------------------------------------------"
 echo
 echo "./v2ray -config config.json"
 echo
 
 echo "------------------------------------------------------------"
-echo "APACHE CONFIGURATION"
+echo "APACHE CONFIG"
 echo "------------------------------------------------------------"
 echo
-echo "$APACHE_CONFIG"
+cat "$HOME_DIR/apache.conf"
 echo
 
 echo "------------------------------------------------------------"
@@ -342,18 +330,21 @@ echo "------------------------------------------------------------"
 echo "FILES"
 echo "------------------------------------------------------------"
 echo
-echo "$HOME_DIR/v2ray"
-echo "$HOME_DIR/config.json"
-echo "$WEB_DIR/${UUID}.html"
-echo "$WEB_DIR/M${UUID}.png"
-echo "$WEB_DIR/L${UUID}.png"
+echo "~/v2ray"
+echo "~/v2ctl"
+echo "~/config.json"
+echo "~/apache.conf"
+echo "~/www/index.html"
+echo "~/www/${UUID}.html"
+echo "~/www/vmess.png"
+echo "~/www/vless.png"
 echo
 
 echo "============================================================"
-echo "Now configure:"
-echo "1. AlwaysData -> Advanced -> Services"
-echo "2. AlwaysData -> Web -> Sites"
-echo "3. AlwaysData panel settings as required"
+echo "Configure AlwaysData:"
+echo
+echo "1. Advanced -> Processes -> Services"
+echo "2. Web -> Sites"
+echo "3. Use ~/apache.conf for Apache configuration"
 echo "============================================================"
 echo
-```
