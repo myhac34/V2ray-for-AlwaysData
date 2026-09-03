@@ -20,7 +20,7 @@ Automated installer for deploying V2Ray on AlwaysData with VMess and VLESS over 
 Connect to your AlwaysData account through SSH and run:
 
 ```bash
-wget -O install.sh https://raw.githubusercontent.com/myhac34/v2ray-alwaysdata/main/install.sh
+wget -O install.sh https://raw.githubusercontent.com/myhac34/V2ray-for-AlwaysData/main/install.sh
 chmod +x install.sh
 ./install.sh
 ```
