@@ -1,17 +1,50 @@
-# V2ray for AlwaysData
-Create By ifeng<br>
-Web Site: https://www.hicairo.com <br>
-Telegram: https://t.me/HiaiFeng <br>
+# V2Ray for AlwaysData
 
-# 简介：
-本项目用于在 Alwaysdata.com 免费服务上部署 V2ray ，采用的方案为 Apache + WebSocket + VMess/VLess + TLS。速度不是很理想，建议配合 Cloudflare CDN 使用。
+Automated installer for deploying V2Ray on AlwaysData with VMess and VLESS over WebSocket and TLS.
 
-# 注意事项：
-<p><li>对于任何一个云开发平台，挖矿和流量代理项目都是不受欢迎的，属于滥用行为。<b>建议可以将 Alwaysdata 作为防失联用途使用</b>，科学上网主线路可以使用付费的 vps 。我前一段时间在 <a href="https://t.me/HiaiFeng">telegram</a> 群里为大家推荐的 <a href="https://www.hicairo.com/post/42.html">Gcore 200M 带宽不限流量套餐</a>，每月 3.25 欧元，折合人民币 24 元左右，我觉得大多数人都可以承受。提醒各位小伙伴，本项目仅限技术交流使用，请勿滥用，由此引起的账号封禁等风险自负。</li></p>
-<p><li>部署完成如发现不能上网，请检查域名是否被墙，可使用 Cloudflare CDN 解决。</li></p>
+## Features
 
-# 使用方法：
-详细使用方法请参考：https://www.hicairo.com/post/63.html
+* V2Ray 4.45.0
+* VMess + WebSocket
+* VLESS + WebSocket
+* TLS through AlwaysData Apache
+* Automatic UUID generation
+* Automatic `config.json` generation
+* Automatic VMess/VLESS links
+* Automatic QR codes
+* Automatic HTML node page
+* AlwaysData-compatible IPv6 listener (`::`)
 
-# 反馈与交流：
-<p>在使用过程中，如果遇到问题，请使用Telegram与我联系。（ https://t.me/HiaiFeng ）</p>
+## Installation
+
+Connect to your AlwaysData account through SSH and run:
+
+```bash
+wget -O install.sh https://raw.githubusercontent.com/USERNAME/v2ray-alwaysdata/main/install.sh
+chmod +x install.sh
+./install.sh
+```
+
+Replace `USERNAME` with your GitHub username.
+
+The installer will automatically create the V2Ray configuration, WebSocket paths, VMess/VLESS links, QR codes and the node page.
+
+## AlwaysData configuration
+
+After running the installer, configure the following in the AlwaysData panel:
+
+1. Create a Service using:
+
+```bash
+./v2ray -config config.json
+```
+
+2. Configure the Web Site with the Apache `ProxyPass` configuration printed by the installer.
+
+3. Make sure the website uses HTTPS.
+
+The installer prints the generated UUID, node URL and Apache configuration at the end.
+
+## Important
+
+The generated UUID and node URL provide access to the V2Ray service. Keep them private and do not publish generated configuration files or personal credentials in the repository.
