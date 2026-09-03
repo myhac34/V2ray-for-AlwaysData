@@ -14,8 +14,7 @@ set -e
 # V2Ray for AlwaysData - Improved Installer
 # ============================================================
 
-VERSION="4.45.0"
-BASE_URL="https://github.com/v2fly/v2ray-core/releases/download/v${VERSION}"
+BASE_URL="https://github.com/v2fly/v2ray-core/releases/latest/download"
 
 USER_NAME="${USER}"
 HOME_DIR="$HOME"
@@ -31,10 +30,16 @@ HOST="${USER_NAME}.alwaysdata.net"
 
 TMP_DIR="$(mktemp -d)"
 
+# ------------------------------------------------------------
+# Cleanup on exit
+# ------------------------------------------------------------
+
+trap 'rm -rf "$TMP_DIR"' EXIT
+
 echo
-echo "============================================================"
-echo "        V2Ray for AlwaysData"
-echo "============================================================"
+echo -e "${BLUE}============================================================${NC}"
+echo -e "${BLUE}             V2Ray for AlwaysData${NC}"
+echo -e "${BLUE}============================================================${NC}"
 echo
 
 # ------------------------------------------------------------
@@ -43,7 +48,7 @@ echo
 
 for cmd in wget unzip qrencode; do
     if ! command -v "$cmd" >/dev/null 2>&1; then
-        echo "ERROR: $cmd is not installed."
+        echo -e "${RED}ERROR: $cmd is not installed.${NC}"
         exit 1
     fi
 done
@@ -59,8 +64,8 @@ else
     echo "$UUID" > "$HOME_DIR/.v2ray_uuid"
 fi
 
-echo "Host : $HOST"
-echo "UUID : $UUID"
+echo -e "${CYAN}Host :${NC} $HOST"
+echo -e "${CYAN}UUID :${NC} $UUID"
 echo
 
 # ------------------------------------------------------------
@@ -70,10 +75,10 @@ echo
 mkdir -p "$WEB_DIR"
 
 # ------------------------------------------------------------
-# Download V2Ray
+# Download latest V2Ray
 # ------------------------------------------------------------
 
-echo "[1/8] Downloading V2Ray ${VERSION}..."
+echo -e "${YELLOW}[1/8] Downloading latest V2Ray...${NC}"
 
 wget -q --show-progress \
     -O "$TMP_DIR/v2ray.zip" \
@@ -83,22 +88,24 @@ wget -q --show-progress \
 # Extract
 # ------------------------------------------------------------
 
-echo "[2/8] Installing V2Ray..."
+echo -e "${YELLOW}[2/8] Installing V2Ray...${NC}"
 
 unzip -oq "$TMP_DIR/v2ray.zip" -d "$TMP_DIR/v2ray"
 
 cp "$TMP_DIR/v2ray/v2ray" "$HOME_DIR/v2ray"
-cp "$TMP_DIR/v2ray/v2ctl" "$HOME_DIR/v2ctl"
 cp "$TMP_DIR/v2ray/geoip.dat" "$HOME_DIR/geoip.dat"
 cp "$TMP_DIR/v2ray/geosite.dat" "$HOME_DIR/geosite.dat"
 
-chmod +x "$HOME_DIR/v2ray" "$HOME_DIR/v2ctl"
+chmod +x "$HOME_DIR/v2ray"
+
+# Get installed version
+VERSION="$("$HOME_DIR/v2ray" version | head -n 1 | awk '{print $2}')"
 
 # ------------------------------------------------------------
 # Config
 # ------------------------------------------------------------
 
-echo "[3/8] Creating config.json..."
+echo -e "${YELLOW}[3/8] Creating config.json...${NC}"
 
 cat > "$HOME_DIR/config.json" <<EOF
 {
@@ -160,9 +167,11 @@ EOF
 # Test config
 # ------------------------------------------------------------
 
-echo "[4/8] Testing configuration..."
+echo -e "${YELLOW}[4/8] Testing configuration...${NC}"
 
-"$HOME_DIR/v2ray" -test -config "$HOME_DIR/config.json"
+"$HOME_DIR/v2ray" test -c "$HOME_DIR/config.json"
+
+echo -e "${GREEN}Configuration OK.${NC}"
 
 # ------------------------------------------------------------
 # VMess link
@@ -184,7 +193,7 @@ VLESS_LINK="vless://${UUID}@${HOST}:443?encryption=none&security=tls&type=ws&hos
 # QR codes
 # ------------------------------------------------------------
 
-echo "[5/8] Creating QR codes..."
+echo -e "${YELLOW}[5/8] Creating QR codes...${NC}"
 
 qrencode -o "$WEB_DIR/vmess.png" "$VMESS_LINK"
 qrencode -o "$WEB_DIR/vless.png" "$VLESS_LINK"
@@ -193,7 +202,7 @@ qrencode -o "$WEB_DIR/vless.png" "$VLESS_LINK"
 # Apache configuration
 # ------------------------------------------------------------
 
-echo "[6/8] Creating apache.conf..."
+echo -e "${YELLOW}[6/8] Creating apache.conf...${NC}"
 
 cat > "$HOME_DIR/apache.conf" <<EOF
 ProxyRequests off
@@ -210,7 +219,7 @@ EOF
 # Web page
 # ------------------------------------------------------------
 
-echo "[7/8] Creating web pages..."
+echo -e "${YELLOW}[7/8] Creating web pages...${NC}"
 
 cat > "$WEB_DIR/index.html" <<EOF
 <!DOCTYPE html>
@@ -290,7 +299,7 @@ EOF
 # Cleanup
 # ------------------------------------------------------------
 
-echo "[8/8] Cleaning temporary files..."
+echo -e "${YELLOW}[8/8] Cleaning temporary files...${NC}"
 
 rm -rf "$TMP_DIR"
 
@@ -316,7 +325,7 @@ echo -e "${BLUE}------------------------------------------------------------${NC
 echo -e "${BLUE}SERVICE${NC}"
 echo -e "${BLUE}------------------------------------------------------------${NC}"
 echo
-echo -e "${YELLOW}./v2ray -config config.json${NC}"
+echo -e "${YELLOW}./v2ray run -c config.json${NC}"
 echo
 
 echo -e "${BLUE}------------------------------------------------------------${NC}"
@@ -338,8 +347,9 @@ echo -e "${BLUE}FILES${NC}"
 echo -e "${BLUE}------------------------------------------------------------${NC}"
 echo
 echo -e "${YELLOW}~/v2ray${NC}"
-echo -e "${YELLOW}~/v2ctl${NC}"
 echo -e "${YELLOW}~/config.json${NC}"
+echo -e "${YELLOW}~/geoip.dat${NC}"
+echo -e "${YELLOW}~/geosite.dat${NC}"
 echo -e "${YELLOW}~/apache.conf${NC}"
 echo -e "${YELLOW}~/www/index.html${NC}"
 echo -e "${YELLOW}~/www/${UUID}.html${NC}"
@@ -351,7 +361,7 @@ echo -e "${MAGENTA}============================================================$
 echo -e "${MAGENTA}Configure AlwaysData:${NC}"
 echo
 echo -e "${MAGENTA}1. Advanced -> Processes -> Services${NC}"
-echo -e "   Command: ${YELLOW}./v2ray -config config.json${NC}"
+echo -e "   Command: ${YELLOW}./v2ray run -c config.json${NC}"
 echo
 echo -e "${MAGENTA}2. Web -> Sites${NC}"
 echo -e "   Type: ${YELLOW}Static files${NC}"
