@@ -18,9 +18,13 @@ Automated installer for deploying V2Ray on AlwaysData with VMess and VLESS over 
 ## V2Ray Version
 
 The installer automatically downloads the latest stable V2Ray release from V2Fly.
+
 No manual version change is required.
+
 The installer is compatible with V2Ray 5.x and uses the modern:
+
 ./v2ray run -c config.json
+
 command.
 
 ## Installation
