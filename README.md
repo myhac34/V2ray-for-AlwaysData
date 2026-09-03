@@ -47,7 +47,7 @@ After running the installer, configure the following in the AlwaysData panel:
 1. Create a Service using:
 
 ```bash
-./v2ray -config config.json
+./v2ray run -c config.json
 ```
 
 2. Configure the Web Site with the Apache `ProxyPass` configuration printed by the installer.
