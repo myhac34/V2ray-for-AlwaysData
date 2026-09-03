@@ -299,66 +299,66 @@ rm -rf "$TMP_DIR"
 # ------------------------------------------------------------
 
 echo
-echo "============================================================"
-echo "             INSTALLATION COMPLETE"
-echo "============================================================"
+echo -e "${GREEN}============================================================${NC}"
+echo -e "${GREEN}             INSTALLATION COMPLETE${NC}"
+echo -e "${GREEN}============================================================${NC}"
 echo
 
-echo "V2Ray version:"
-echo "${VERSION}"
+echo -e "${CYAN}V2Ray version:${NC}"
+echo -e "${CYAN}${VERSION}${NC}"
 echo
 
-echo "UUID:"
-echo "${UUID}"
+echo -e "${CYAN}UUID:${NC}"
+echo -e "${CYAN}${UUID}${NC}"
 echo
 
-echo "------------------------------------------------------------"
-echo "SERVICE"
-echo "------------------------------------------------------------"
+echo -e "${BLUE}------------------------------------------------------------${NC}"
+echo -e "${BLUE}SERVICE${NC}"
+echo -e "${BLUE}------------------------------------------------------------${NC}"
 echo
-echo "./v2ray -config config.json"
-echo
-
-echo "------------------------------------------------------------"
-echo "APACHE CONFIG"
-echo "------------------------------------------------------------"
-echo
-cat "$HOME_DIR/apache.conf"
+echo -e "${YELLOW}./v2ray -config config.json${NC}"
 echo
 
-echo "------------------------------------------------------------"
-echo "NODE PAGE"
-echo "------------------------------------------------------------"
+echo -e "${BLUE}------------------------------------------------------------${NC}"
+echo -e "${BLUE}APACHE CONFIG${NC}"
+echo -e "${BLUE}------------------------------------------------------------${NC}"
 echo
-echo "https://${HOST}/${UUID}.html"
-echo
-
-echo "------------------------------------------------------------"
-echo "FILES"
-echo "------------------------------------------------------------"
-echo
-echo "~/v2ray"
-echo "~/v2ctl"
-echo "~/config.json"
-echo "~/apache.conf"
-echo "~/www/index.html"
-echo "~/www/${UUID}.html"
-echo "~/www/vmess.png"
-echo "~/www/vless.png"
+echo -e "${YELLOW}$(cat "$HOME_DIR/apache.conf")${NC}"
 echo
 
-echo "============================================================"
-echo "Configure AlwaysData:"
+echo -e "${BLUE}------------------------------------------------------------${NC}"
+echo -e "${BLUE}NODE PAGE${NC}"
+echo -e "${BLUE}------------------------------------------------------------${NC}"
 echo
-echo "1. Advanced -> Processes -> Services"
-echo "   Command: ./v2ray -config config.json"
+echo -e "${CYAN}https://${HOST}/${UUID}.html${NC}"
 echo
-echo "2. Web -> Sites"
-echo "   Type: Static files"
-echo "   Document root: ~/www"
-echo "   HTTPS: Enabled"
+
+echo -e "${BLUE}------------------------------------------------------------${NC}"
+echo -e "${BLUE}FILES${NC}"
+echo -e "${BLUE}------------------------------------------------------------${NC}"
 echo
-echo "3. Apache configuration"
-echo "   Paste the contents of ~/apache.conf"
-echo "============================================================"
+echo -e "${YELLOW}~/v2ray${NC}"
+echo -e "${YELLOW}~/v2ctl${NC}"
+echo -e "${YELLOW}~/config.json${NC}"
+echo -e "${YELLOW}~/apache.conf${NC}"
+echo -e "${YELLOW}~/www/index.html${NC}"
+echo -e "${YELLOW}~/www/${UUID}.html${NC}"
+echo -e "${YELLOW}~/www/vmess.png${NC}"
+echo -e "${YELLOW}~/www/vless.png${NC}"
+echo
+
+echo -e "${MAGENTA}============================================================${NC}"
+echo -e "${MAGENTA}Configure AlwaysData:${NC}"
+echo
+echo -e "${MAGENTA}1. Advanced -> Processes -> Services${NC}"
+echo -e "   Command: ${YELLOW}./v2ray -config config.json${NC}"
+echo
+echo -e "${MAGENTA}2. Web -> Sites${NC}"
+echo -e "   Type: ${YELLOW}Static files${NC}"
+echo -e "   Document root: ${YELLOW}~/www${NC}"
+echo -e "   HTTPS: ${YELLOW}Enabled${NC}"
+echo
+echo -e "${MAGENTA}3. Apache configuration${NC}"
+echo -e "   Paste the contents of ${YELLOW}~/apache.conf${NC}"
+echo -e "${MAGENTA}============================================================${NC}"
 echo
